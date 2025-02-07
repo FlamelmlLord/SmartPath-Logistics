@@ -1,5 +1,9 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
+
+// Configurar CORS
+app.use(cors());
 const port = 3000;
 const rutasVehiculo = require('./src/rutas/rutas_vehiculo')
 
