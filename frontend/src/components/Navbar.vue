@@ -1,10 +1,10 @@
 <template>
   <nav class="navbar">
     <ul>
-      <li><button @click="navigate('mapa')">Visualizar Rutas</button></li>
+      <li><button @click="navigate('conductores')">Conductores</button></li>
       <li><button @click="navigate('carros')">Vehiculos</button></li>
       <li><button @click="navigate('rutas')">Rutas</button></li>
-      <li><button @click="navigate('empleados')">Empleados</button></li>
+      <li><button @click="navigate('mapa')">Visualizar Rutas</button></li>
     </ul>
   </nav>
 </template>
@@ -16,10 +16,10 @@ export default {
     navigate(page) {
       // Definimos un objeto de rutas para cada botón
       const routes = {
-        mapa: '/',         // Visualizar Rutas redirige a la ruta raíz
+        conductores: '/conductores',
         carros: '/carros', // Asegúrate de tener estas rutas definidas en tu router
-        rutas: '/rutas',
-        empleados: '/empleados'
+        mapa: '/',         // Visualizar Rutas redirige a la ruta raíz
+        rutas: '/rutas'
       };
 
       const route = routes[page];
