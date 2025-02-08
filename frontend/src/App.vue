@@ -1,10 +1,20 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
+  <h1>Aplicación Entregas</h1>
+  <p>Elija la opción de su preferencia</p>
+  <AppNavbar />
   <router-view/>
 </template>
+
+<script>
+import AppNavbar from './components/Navbar.vue';
+
+export default {
+  name: 'App',
+  components: {
+    AppNavbar 
+  }
+}
+</script>
 
 <style>
 #app {
@@ -15,6 +25,7 @@
   color: #2c3e50;
 }
 
+/* Si no usas Vue Router, elimina estos estilos:
 nav {
   padding: 30px;
 }
@@ -27,4 +38,5 @@ nav a {
 nav a.router-link-exact-active {
   color: #42b983;
 }
+*/
 </style>

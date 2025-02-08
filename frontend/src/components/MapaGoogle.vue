@@ -77,7 +77,8 @@ export default {
 
 <style>
 #map {
-  width: 100%;
-  height: 100%;
+  margin: 0 auto;
+  width: 70%;
+  height: 70%;
 }
 </style>
