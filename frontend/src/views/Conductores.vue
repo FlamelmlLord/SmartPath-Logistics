@@ -1,6 +1,7 @@
 <template>
   <div class="conductores">
     <h1>Lista de Conductores</h1>
+    
     <!-- Tabla de conductores -->
     <table>
       <thead>
@@ -11,6 +12,7 @@
           <th>Teléfono</th>
           <th>Correo</th>
           <th>Número de Licencia</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -21,6 +23,10 @@
           <td>{{ conductor.telefono }}</td>
           <td>{{ conductor.correo }}</td>
           <td>{{ conductor.numeroLicencia }}</td>
+          <td class="actions">
+            <button @click="iniciarEdicion(index)">Editar</button>
+            <button @click="eliminarConductor(index)">Eliminar</button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -54,6 +60,39 @@
       </div>
       <button type="submit">Agregar Conductor</button>
     </form>
+
+    <!-- Formulario para editar conductor (se muestra solo si se está editando alguno) -->
+    <div v-if="conductorEditando !== null">
+      <h2>Editar Conductor</h2>
+      <form @submit.prevent="actualizarConductor">
+        <div class="form-group">
+          <label for="editDocumento">Documento:</label>
+          <input type="text" id="editDocumento" v-model="conductorEditando.documento" required />
+        </div>
+        <div class="form-group">
+          <label for="editNombre">Nombre:</label>
+          <input type="text" id="editNombre" v-model="conductorEditando.nombre" required />
+        </div>
+        <div class="form-group">
+          <label for="editApellido">Apellido:</label>
+          <input type="text" id="editApellido" v-model="conductorEditando.apellido" required />
+        </div>
+        <div class="form-group">
+          <label for="editTelefono">Teléfono:</label>
+          <input type="tel" id="editTelefono" v-model="conductorEditando.telefono" required />
+        </div>
+        <div class="form-group">
+          <label for="editCorreo">Correo:</label>
+          <input type="email" id="editCorreo" v-model="conductorEditando.correo" required />
+        </div>
+        <div class="form-group">
+          <label for="editNumeroLicencia">Número de Licencia:</label>
+          <input type="text" id="editNumeroLicencia" v-model="conductorEditando.numeroLicencia" required />
+        </div>
+        <button type="submit">Guardar Cambios</button>
+        <button type="button" @click="cancelarEdicion">Cancelar</button>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -62,7 +101,7 @@ export default {
   name: 'ConductoresView',
   data() {
     return {
-      // Array inicial con datos de ejemplo
+      // Datos de ejemplo para visualizar en la tabla
       conductores: [
         {
           documento: '12345678',
@@ -81,7 +120,7 @@ export default {
           numeroLicencia: 'XYZ789'
         }
       ],
-      // Objeto para almacenar los datos del nuevo conductor a agregar
+      // Objeto para el formulario de agregar un nuevo conductor
       nuevoConductor: {
         documento: '',
         nombre: '',
@@ -89,12 +128,15 @@ export default {
         telefono: '',
         correo: '',
         numeroLicencia: ''
-      }
+      },
+      // Datos para la edición
+      conductorEditando: null,  // Guardará una copia del conductor que se está editando
+      indiceEditando: -1        // Índice del conductor que se está editando
     };
   },
   methods: {
+    // Agrega un nuevo conductor a la lista
     agregarConductor() {
-      // Agrega el nuevo conductor al array de conductores
       this.conductores.push({ ...this.nuevoConductor });
       // Reinicia el formulario
       this.nuevoConductor = {
@@ -105,6 +147,31 @@ export default {
         correo: '',
         numeroLicencia: ''
       };
+    },
+    // Inicia el proceso de edición: copia el conductor seleccionado y guarda su índice
+    iniciarEdicion(index) {
+      this.indiceEditando = index;
+      this.conductorEditando = { ...this.conductores[index] };
+    },
+    // Guarda los cambios en el conductor editado
+    actualizarConductor() {
+      // Actualiza el conductor en el array asignando directamente el objeto editado
+      this.conductores[this.indiceEditando] = { ...this.conductorEditando };
+      // Reinicia los datos de edición
+      this.conductorEditando = null;
+      this.indiceEditando = -1;
+    }
+    ,
+    // Cancela la edición
+    cancelarEdicion() {
+      this.conductorEditando = null;
+      this.indiceEditando = -1;
+    },
+    // Elimina el conductor seleccionado (con confirmación)
+    eliminarConductor(index) {
+      if (confirm('¿Seguro que deseas eliminar este conductor?')) {
+        this.conductores.splice(index, 1);
+      }
     }
   }
 };
@@ -115,7 +182,6 @@ export default {
   padding: 20px;
 }
 
-/* Estilos para la tabla */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -124,7 +190,7 @@ table {
 
 thead th {
   background-color: #f2f2f2;
-  text-align: left;
+  text-align: center;
   padding: 10px;
   border-bottom: 1px solid #ddd;
 }
@@ -138,7 +204,6 @@ tbody tr:hover {
   background-color: #f9f9f9;
 }
 
-/* Estilos para el formulario */
 form {
   margin-top: 20px;
   display: grid;
@@ -162,19 +227,30 @@ form {
   border-radius: 4px;
 }
 
-button[type="submit"] {
-  grid-column: 1 / -1;
-  padding: 10px;
+button {
+  padding: 8px 12px;
   border: none;
   background-color: #333;
   color: #fff;
-  font-size: 16px;
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 10px;
 }
 
-button[type="submit"]:hover {
+button:hover {
   background-color: #555;
 }
+
+/* Botones de envío y acción dentro de los formularios */
+button[type="submit"] {
+  grid-column: 1 / -1;
+}
+
+.actions {
+  text-align: center; /* Centra el contenido dentro de la celda */
+}
+
+.actions button {
+  margin: 0 5px; /* Da un margen horizontal entre los botones */
+}
+
 </style>

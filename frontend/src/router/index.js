@@ -1,5 +1,7 @@
+// index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import Conductores from '../views/Conductores.vue' // Importa el componente
 
 const routes = [
   {
@@ -11,6 +13,11 @@ const routes = [
     path: '/about',
     name: 'about',
     component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+  },
+  {
+    path: '/conductores',
+    name: 'conductores',
+    component: Conductores
   }
 ]
 
