@@ -2,7 +2,8 @@
   <nav class="navbar">
     <ul>
       <li><button @click="navigate('conductores')">Conductores</button></li>
-      <li><button @click="navigate('carros')">Vehiculos</button></li>
+      <li><button @click="navigate('vehiculos')">Vehiculos</button></li>
+      <li><button @click="navigate('paquetes')">Paquetes</button></li>
       <li><button @click="navigate('rutas')">Rutas</button></li>
       <li><button @click="navigate('mapa')">Visualizar Rutas</button></li>
     </ul>
@@ -17,7 +18,8 @@ export default {
       // Definimos un objeto de rutas para cada botón
       const routes = {
         conductores: '/conductores',
-        carros: '/carros', // Asegúrate de tener estas rutas definidas en tu router
+        vehiculos: '/vehiculos', // Asegúrate de tener estas rutas definidas en tu router
+        paquetes: '/paquetes',
         mapa: '/',         // Visualizar Rutas redirige a la ruta raíz
         rutas: '/rutas'
       };
