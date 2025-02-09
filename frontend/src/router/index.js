@@ -4,7 +4,7 @@ import HomeView from '../views/HomeView.vue'
 import Conductores from '../views/Conductores.vue' // Importa el componente
 import Vehiculos from '../views/Vehiculos.vue' // Importa el componente
 import Paquetes from '../views/Paquetes.vue' // Importa el componente
-
+import Rutas from '../views/Rutas.vue' // Importa el componente
 
 const routes = [
   {
@@ -26,6 +26,11 @@ const routes = [
     path: '/paquetes',
     name: 'paquetes',
     component: Paquetes
+  },
+  {
+    path: '/rutas',
+    name: 'rutas',
+    component: Rutas
   }
 ]
 
