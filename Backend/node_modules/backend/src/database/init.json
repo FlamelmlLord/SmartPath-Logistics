@@ -1,0 +1,39 @@
+[
+  {
+    "placa": "OTG78E",
+    "modelo": "modelo",
+    "color": "nigga",
+    "marca": "sexo",
+    "capacidad_carga": "3m^3"
+  },
+  {
+    "placa": "OTG78E",
+    "modelo": "modelo",
+    "color": "nigga",
+    "marca": "sexo",
+    "capacidad_carga": "3m^3"
+  },
+  {
+    "placa": "OTG78E",
+    "modelo": "modelo",
+    "color": "nigga",
+    "marca": "sexo",
+    "capacidad_carga": "3m^3"
+  }
+]
+
+/*
+{
+    "vehiculos": [
+        {
+
+        },
+        {
+
+        }
+    ]
+    "entregas": [
+        {},{},{}
+    ]
+}
+    */
