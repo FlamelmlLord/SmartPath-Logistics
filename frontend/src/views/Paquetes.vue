@@ -1,23 +1,28 @@
 <template>
   <div class="paquetes">
     <h1>Lista de Paquetes</h1>
+
     <!-- Tabla de paquetes -->
     <table>
       <thead>
         <tr>
-          <th>Identificador</th>
-          <th>Tamaño</th>
-          <th>Dirección Destino</th>
-          <th>Nombre del Destinatario</th>
+          <th>Rastreo</th>
+          <th>Descripción</th>
+          <th>Destinatario</th>
+          <th>Latitud</th>
+          <th>Longitud</th>
+          <th>Tamaño (m³)</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(paquete, index) in paquetes" :key="index">
-          <td>{{ paquete.identificador }}</td>
-          <td>{{ paquete.tamaño }}</td>
-          <td>{{ paquete.direccionDestino }}</td>
-          <td>{{ paquete.nombreDestinatario }}</td>
+          <td>{{ paquete.rastreo }}</td>
+          <td>{{ paquete.descripcion }}</td>
+          <td>{{ paquete.destinatario }}</td>
+          <td>{{ paquete.latitud }}</td>
+          <td>{{ paquete.longitud }}</td>
+          <td>{{ paquete.tamano }}</td>
           <td class="actions">
             <button @click="iniciarEdicion(index)">Editar</button>
             <button @click="eliminarPaquete(index)">Eliminar</button>
@@ -30,43 +35,51 @@
     <h2>Agregar Paquete</h2>
     <form @submit.prevent="agregarPaquete">
       <div class="form-group">
-        <label for="identificador">Identificador:</label>
-        <input type="text" id="identificador" v-model="nuevoPaquete.identificador" required />
+        <label for="descripcion">Descripción:</label>
+        <input type="text" id="descripcion" v-model="nuevoPaquete.descripcion" required />
       </div>
       <div class="form-group">
-        <label for="tamaño">Tamaño:</label>
-        <input type="text" id="tamaño" v-model="nuevoPaquete.tamaño" required />
+        <label for="destinatario">Destinatario:</label>
+        <input type="text" id="destinatario" v-model="nuevoPaquete.destinatario" required />
       </div>
       <div class="form-group">
-        <label for="direccionDestino">Dirección Destino:</label>
-        <input type="text" id="direccionDestino" v-model="nuevoPaquete.direccionDestino" required />
+        <label for="latitud">Latitud:</label>
+        <input type="text" id="latitud" v-model="nuevoPaquete.latitud" required />
       </div>
       <div class="form-group">
-        <label for="nombreDestinatario">Nombre del Destinatario:</label>
-        <input type="text" id="nombreDestinatario" v-model="nuevoPaquete.nombreDestinatario" required />
+        <label for="longitud">Longitud:</label>
+        <input type="text" id="longitud" v-model="nuevoPaquete.longitud" required />
+      </div>
+      <div class="form-group">
+        <label for="tamano">Tamaño(m³):</label>
+        <input type="text" id="tamano" v-model="nuevoPaquete.tamano" required />
       </div>
       <button type="submit">Agregar Paquete</button>
     </form>
 
-    <!-- Formulario para editar un paquete (visible sólo si se está editando) -->
+    <!-- Formulario para editar un paquete -->
     <div v-if="paqueteEditando !== null">
       <h2>Editar Paquete</h2>
       <form @submit.prevent="actualizarPaquete">
         <div class="form-group">
-          <label for="editIdentificador">Identificador:</label>
-          <input type="text" id="editIdentificador" v-model="paqueteEditando.identificador" required />
+          <label for="editDescripcion">Descripción:</label>
+          <input type="text" id="editDescripcion" v-model="paqueteEditando.descripcion" required />
         </div>
         <div class="form-group">
-          <label for="editTamaño">Tamaño:</label>
-          <input type="text" id="editTamaño" v-model="paqueteEditando.tamaño" required />
+          <label for="editDestinatario">Destinatario:</label>
+          <input type="text" id="editDestinatario" v-model="paqueteEditando.destinatario" required />
         </div>
         <div class="form-group">
-          <label for="editDireccionDestino">Dirección Destino:</label>
-          <input type="text" id="editDireccionDestino" v-model="paqueteEditando.direccionDestino" required />
+          <label for="editLatitud">Latitud:</label>
+          <input type="text" id="editLatitud" v-model="paqueteEditando.latitud" required />
         </div>
         <div class="form-group">
-          <label for="editNombreDestinatario">Nombre del Destinatario:</label>
-          <input type="text" id="editNombreDestinatario" v-model="paqueteEditando.nombreDestinatario" required />
+          <label for="editLongitud">Longitud:</label>
+          <input type="text" id="editLongitud" v-model="paqueteEditando.longitud" required />
+        </div>
+        <div class="form-group">
+          <label for="editTamano">Tamaño(m³):</label>
+          <input type="text" id="editTamano" v-model="paqueteEditando.tamano" required />
         </div>
         <button type="submit">Guardar Cambios</button>
         <button type="button" @click="cancelarEdicion">Cancelar</button>
@@ -80,67 +93,121 @@ export default {
   name: 'PaquetesView',
   data() {
     return {
-      // Datos de ejemplo para la tabla de paquetes
-      paquetes: [
-        {
-          identificador: 'P001',
-          tamaño: 'Grande',
-          direccionDestino: 'Calle 123, Ciudad',
-          nombreDestinatario: 'Juan Perez'
-        },
-        {
-          identificador: 'P002',
-          tamaño: 'Mediano',
-          direccionDestino: 'Avenida 456, Ciudad',
-          nombreDestinatario: 'María Lopez'
-        }
-      ],
-      // Objeto para el formulario de agregar un nuevo paquete
+      paquetes: [], // Se llenará desde la API
       nuevoPaquete: {
-        identificador: '',
-        tamaño: '',
-        direccionDestino: '',
-        nombreDestinatario: ''
+        descripcion: '',
+        destinatario: '',
+        latitud: '',
+        longitud: '',
+        tamano: ''
       },
-      // Variables para edición
       paqueteEditando: null,
       indiceEditando: -1
     };
   },
   methods: {
-    agregarPaquete() {
-      // Agrega una copia del nuevo paquete al array
-      this.paquetes.push({ ...this.nuevoPaquete });
-      // Reinicia el formulario
-      this.nuevoPaquete = {
-        identificador: '',
-        tamaño: '',
-        direccionDestino: '',
-        nombreDestinatario: ''
-      };
+    // 🚀 Obtener paquetes
+    async fetchPaquetes() {
+      try {
+        const response = await fetch('http://localhost:3000/paquetes');
+        const data = await response.json();
+
+        // Transformar nombres de las claves
+        this.paquetes = data.map(paquete => ({
+          rastreo: paquete.rastreo,
+          descripcion: paquete.descripcion,
+          destinatario: paquete.destinatario, // Nuevo campo
+          latitud: paquete.latitud,
+          longitud: paquete.longitud,
+          tamano: paquete.tamano // ✅ Intentamos ambas versiones
+        }));
+      } catch (error) {
+        console.error('Error al obtener paquetes:', error);
+      }
     },
+
+    // 🚀 Agregar paquete
+    async agregarPaquete() {
+      try {
+        const response = await fetch('http://localhost:3000/paquetes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(this.nuevoPaquete)
+        });
+
+        if (response.ok) {
+          this.fetchPaquetes();
+          this.nuevoPaquete = { descripcion: '', destinatario: '', latitud: '', longitud: '', tamano: '' };
+        } else {
+          console.error('Error al agregar paquete');
+        }
+      } catch (error) {
+        console.error('Error de red:', error);
+      }
+    },
+
+    // 🚀 Iniciar edición
     iniciarEdicion(index) {
       this.indiceEditando = index;
       this.paqueteEditando = { ...this.paquetes[index] };
+      console.log('✏️ Editando paquete:', this.paqueteEditando); // 🔍 Depuración
+
     },
-    actualizarPaquete() {
-      // Actualiza el paquete en el array
-      this.paquetes[this.indiceEditando] = { ...this.paqueteEditando };
+
+    // 🚀 Actualizar paquete
+    async actualizarPaquete() {
+  try {
+    const paqueteActualizado = { 
+      ...this.paqueteEditando,
+      tamano: this.paqueteEditando.tamano  // Asegurar que tamano se envíe correctamente
+    };
+
+    console.log('📡 Enviando al backend:', paqueteActualizado); // 🔍 Depuración
+
+    const response = await fetch(`http://localhost:3000/paquetes/${this.paqueteEditando.rastreo}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(paqueteActualizado)
+    });
+
+    if (response.ok) {
+      this.fetchPaquetes();
       this.paqueteEditando = null;
       this.indiceEditando = -1;
-    },
-    cancelarEdicion() {
-      this.paqueteEditando = null;
-      this.indiceEditando = -1;
-    },
-    eliminarPaquete(index) {
-      if (confirm('¿Estás seguro de eliminar este paquete?')) {
-        this.paquetes.splice(index, 1);
+    } else {
+      console.error('❌ Error al actualizar paquete');
+    }
+  } catch (error) {
+    console.error('🚨 Error de red:', error);
+  }
+},
+
+    // 🚀 Eliminar paquete
+    async eliminarPaquete(index) {
+      const rastreo = this.paquetes[index].rastreo;
+      if (!confirm('¿Seguro que deseas eliminar este paquete?')) return;
+
+      try {
+        const response = await fetch(`http://localhost:3000/paquetes/${rastreo}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          this.fetchPaquetes();
+        } else {
+          console.error('Error al eliminar paquete');
+        }
+      } catch (error) {
+        console.error('Error de red:', error);
       }
     }
+  },
+  mounted() {
+    this.fetchPaquetes();
   }
 };
 </script>
+
 
 <style scoped>
 .paquetes {

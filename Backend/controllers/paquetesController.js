@@ -1,21 +1,24 @@
 const client = require('./databaseConn');
 
+// Obtener todos los paquetes
 exports.getAllPaquetes = (req, res) => {
     client.query('SELECT * FROM paquetes', (err, result) => {
         if (err) {
             res.status(500).send(err.message);
         } else {
+            console.log('📡 Datos enviados desde backend:', result.rows); // 🔍 Depuración
             res.json(result.rows);
         }
     });
 };
 
+// Crear nuevo paquete
 exports.createPaquete = (req, res) => {
-    const { descripcion, latitud, longitud, tamaño } = req.body;
+    const { descripcion, destinatario, latitud, longitud, tamano } = req.body;
     
     client.query(
-        'INSERT INTO paquetes (descripcion, latitud, longitud, tamaño) VALUES ($1, $2, $3, $4)',
-        [descripcion, latitud, longitud, tamaño],
+        'INSERT INTO paquetes (descripcion, destinatario, latitud, longitud, tamano) VALUES ($1, $2, $3, $4, $5)',
+        [descripcion, destinatario, latitud, longitud, tamano],
         (err) => {
             if (err) {
                 res.status(500).send(err.message);
@@ -26,17 +29,21 @@ exports.createPaquete = (req, res) => {
     );
 };
 
+// Actualizar paquete
 exports.updatePaquete = (req, res) => {
+    console.log('📥 Datos recibidos para actualizar:', req.body); // 🔍 Depuración
+
     const rastreo = req.params.rastreo;
-    const { descripcion, latitud, longitud, tamaño } = req.body;
-    
+    const { descripcion, destinatario, latitud, longitud, tamano } = req.body;
+
     client.query(
         `UPDATE paquetes 
-        SET descripcion = $1, latitud = $2, longitud = $3, tamaño = $4 
-        WHERE rastreo = $5`,
-        [descripcion, latitud, longitud, tamaño, rastreo],
+        SET descripcion = $1, destinatario = $2, latitud = $3, longitud = $4, tamano = $5 
+        WHERE rastreo = $6`,
+        [descripcion, destinatario, latitud, longitud, tamano, rastreo],
         (err) => {
             if (err) {
+                console.error('❌ Error al actualizar en la base de datos:', err);
                 res.status(500).send(err.message);
             } else {
                 res.sendStatus(200);
@@ -45,6 +52,7 @@ exports.updatePaquete = (req, res) => {
     );
 };
 
+// Eliminar paquete
 exports.deletePaquete = (req, res) => {
     const rastreo = req.params.rastreo;
     
