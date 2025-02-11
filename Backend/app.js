@@ -2,21 +2,47 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-// Configurar CORS
-app.use(cors());
-const port = 3000;
-const rutasVehiculo = require('./src/rutas/rutas_vehiculo')
+// Importación de todas las rutas
+const vehiculosRoutes = require('./routes/rutasVehiculo');
+const conductoresRoutes = require('./routes/rutasConductor');
+const paquetesRoutes = require('./routes/rutasPaquete');
+const rutasRoutes = require('./routes/rutasRuta');
+const reporteRoutes = require('./routes/rutasReporte'); // Para la consulta de reporte
 
-app.use(express.json()); // El server entiende los req como json
+// Configuración básica
+const port = process.env.PORT || 3000;
 
-app.use("/vehiculos", rutasVehiculo);
+// Middlewares esenciales
+app.use(cors({
+  origin: 'http://localhost:8081', // Asegúrate que coincida con tu puerto de Vue
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
+app.use(express.json());
 
+// Configuración de rutas
+app.use("/vehiculos", vehiculosRoutes);
+app.use("/conductores", conductoresRoutes);
+app.use("/paquetes", paquetesRoutes);
+app.use("/rutas", rutasRoutes);
+app.use("/reporte", reporteRoutes); // Ruta para el reporte JSON
 
-
-
-// dont delete
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+// Manejo de errores global
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Algo salió mal!' });
 });
 
+// Ruta de prueba básica
+app.get('/', (req, res) => {
+  res.send('API de SmartPath Logistics');
+});
+
+
+
+
+// Iniciar servidor
+app.listen(port, () => {
+  console.log(`Servidor corriendo en http://localhost:${port}`);
+});

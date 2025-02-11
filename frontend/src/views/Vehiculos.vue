@@ -9,7 +9,7 @@
           <th>Marca</th>
           <th>Modelo</th>
           <th>Color</th>
-          <th>Capacidad de Carga</th>
+          <th>Capacidad de Carga en m³</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -90,70 +90,121 @@ export default {
   name: 'VehiculosView',
   data() {
     return {
-      // Datos de ejemplo para la tabla
-      vehiculos: [
-        {
-          placa: 'ABC-123',
-          marca: 'Toyota',
-          modelo: 'Corolla',
-          color: 'Rojo',
-          capacidadCarga: 500
-        },
-        {
-          placa: 'XYZ-789',
-          marca: 'Ford',
-          modelo: 'Focus',
-          color: 'Azul',
-          capacidadCarga: 600
-        }
-      ],
-      // Objeto para el formulario de agregar un nuevo vehículo
+      vehiculos: [], // Se llenará con datos del backend
       nuevoVehiculo: {
         placa: '',
         marca: '',
         modelo: '',
         color: '',
-        capacidadCarga: ''
+        capacidad_carga: '' // 🔄 Ajustado para coincidir con el backend
       },
-      // Variables para la edición
-      vehiculoEditando: null,  // Se almacenará el vehículo a editar
-      indiceEditando: -1       // Se guarda el índice del vehículo que se está editando
+      vehiculoEditando: null,
+      indiceEditando: -1
     };
   },
   methods: {
-    agregarVehiculo() {
-      this.vehiculos.push({ ...this.nuevoVehiculo });
-      // Reinicia el formulario
-      this.nuevoVehiculo = {
-        placa: '',
-        marca: '',
-        modelo: '',
-        color: '',
-        capacidadCarga: ''
-      };
+    // 🚀 Obtener todos los vehículos
+    async fetchVehiculos() {
+  try {
+    const response = await fetch('http://localhost:3000/vehiculos');
+    const data = await response.json();
+
+    // Transformar los datos para que Vue use "capacidadCarga"
+    this.vehiculos = data.map(vehiculo => ({
+      placa: vehiculo.placa,
+      marca: vehiculo.marca,
+      modelo: vehiculo.modelo,
+      color: vehiculo.color,
+      capacidadCarga: vehiculo.capacidad_carga // 🔄 Cambiamos el nombre para que Vue lo reconozca
+    }));
+  } catch (error) {
+    console.error('Error al obtener vehículos:', error);
+  }
+},
+
+    // 🚀 Agregar un nuevo vehículo
+    async agregarVehiculo() {
+      try {
+        const nuevoVehiculoData = { 
+          ...this.nuevoVehiculo,
+          capacidad_carga: this.nuevoVehiculo.capacidadCarga // Renombrado para backend
+        };
+
+        const response = await fetch('http://localhost:3000/vehiculos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(nuevoVehiculoData)
+        });
+
+        if (response.ok) {
+          this.fetchVehiculos(); // Recargar lista
+          this.nuevoVehiculo = { placa: '', marca: '', modelo: '', color: '', capacidadCarga: '' };
+        } else {
+          console.error('Error al agregar vehículo');
+        }
+      } catch (error) {
+        console.error('Error de red:', error);
+      }
     },
+
+    // 🚀 Iniciar edición
     iniciarEdicion(index) {
-      this.indiceEditando = index;
-      this.vehiculoEditando = { ...this.vehiculos[index] };
+  this.indiceEditando = index;
+  this.vehiculoEditando = { ...this.vehiculos[index] }; // 🔄 Usamos los datos ya transformados en fetchVehiculos()
+},
+
+    // 🚀 Actualizar vehículo
+    async actualizarVehiculo() {
+      try {
+        const vehiculoActualizado = { 
+          ...this.vehiculoEditando,
+          capacidad_carga: this.vehiculoEditando.capacidadCarga // Renombrado para backend
+        };
+
+        const response = await fetch(`http://localhost:3000/vehiculos/${this.vehiculoEditando.placa}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(vehiculoActualizado)
+        });
+
+        if (response.ok) {
+          this.fetchVehiculos(); // Recargar lista
+          this.vehiculoEditando = null;
+          this.indiceEditando = -1;
+        } else {
+          console.error('Error al actualizar vehículo');
+        }
+      } catch (error) {
+        console.error('Error de red:', error);
+      }
     },
-    actualizarVehiculo() {
-      // Actualiza el vehículo en el array
-      this.vehiculos[this.indiceEditando] = { ...this.vehiculoEditando };
-      this.vehiculoEditando = null;
-      this.indiceEditando = -1;
-    },
-    cancelarEdicion() {
-      this.vehiculoEditando = null;
-      this.indiceEditando = -1;
-    },
-    eliminarVehiculo(index) {
-      if (confirm('¿Estás seguro de eliminar este vehículo?')) {
-        this.vehiculos.splice(index, 1);
+
+    // 🚀 Eliminar vehículo
+    async eliminarVehiculo(index) {
+      const placa = this.vehiculos[index].placa;
+      if (!confirm('¿Seguro que deseas eliminar este vehículo?')) return;
+
+      try {
+        const response = await fetch(`http://localhost:3000/vehiculos/${placa}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          this.fetchVehiculos(); // Recargar lista
+        } else {
+          console.error('Error al eliminar vehículo');
+        }
+      } catch (error) {
+        console.error('Error de red:', error);
       }
     }
+  },
+  mounted() {
+    this.fetchVehiculos(); // Llamar a la API al cargar la vista
   }
 };
 </script>
+
 
 <style scoped>
 .vehiculos {

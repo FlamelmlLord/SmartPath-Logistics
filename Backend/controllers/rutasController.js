@@ -26,7 +26,6 @@ exports.createRuta = (req, res) => {
     );
 };
 
-// Método para asignar paquetes a una ruta
 exports.addPaqueteToRuta = (req, res) => {
     const { r_id, p_rastreo } = req.body;
     

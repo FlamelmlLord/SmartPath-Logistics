@@ -21,8 +21,8 @@
           <td>{{ conductor.nombre }}</td>
           <td>{{ conductor.apellido }}</td>
           <td>{{ conductor.telefono }}</td>
-          <td>{{ conductor.correo }}</td>
-          <td>{{ conductor.numeroLicencia }}</td>
+          <td>{{ conductor.correo_electronico }}</td>
+          <td>{{ conductor.licencia }}</td>
           <td class="actions">
             <button @click="iniciarEdicion(index)">Editar</button>
             <button @click="eliminarConductor(index)">Eliminar</button>
@@ -101,81 +101,119 @@ export default {
   name: 'ConductoresView',
   data() {
     return {
-      // Datos de ejemplo para visualizar en la tabla
-      conductores: [
-        {
-          documento: '12345678',
-          nombre: 'Juan',
-          apellido: 'Pérez',
-          telefono: '555-1234',
-          correo: 'juan@example.com',
-          numeroLicencia: 'ABC123'
-        },
-        {
-          documento: '87654321',
-          nombre: 'María',
-          apellido: 'González',
-          telefono: '555-5678',
-          correo: 'maria@example.com',
-          numeroLicencia: 'XYZ789'
-        }
-      ],
-      // Objeto para el formulario de agregar un nuevo conductor
+      conductores: [],  // Inicialmente vacío, lo llenaremos con datos de la API
       nuevoConductor: {
         documento: '',
         nombre: '',
         apellido: '',
         telefono: '',
-        correo: '',
-        numeroLicencia: ''
+        correo_electronico: '', // 🔄 Ajuste para coincidir con el backend
+        licencia: ''
       },
-      // Datos para la edición
-      conductorEditando: null,  // Guardará una copia del conductor que se está editando
-      indiceEditando: -1        // Índice del conductor que se está editando
+      conductorEditando: null,  
+      indiceEditando: -1        
     };
   },
   methods: {
-    // Agrega un nuevo conductor a la lista
-    agregarConductor() {
-      this.conductores.push({ ...this.nuevoConductor });
-      // Reinicia el formulario
-      this.nuevoConductor = {
-        documento: '',
-        nombre: '',
-        apellido: '',
-        telefono: '',
-        correo: '',
-        numeroLicencia: ''
-      };
+    // 🚀 Obtener la lista de conductores desde el backend
+    async fetchConductores() {
+      try {
+        const response = await fetch('http://localhost:3000/conductores'); // Ajusta el puerto si es diferente
+        this.conductores = await response.json();
+      } catch (error) {
+        console.error('Error al obtener conductores:', error);
+      }
     },
-    // Inicia el proceso de edición: copia el conductor seleccionado y guarda su índice
-    iniciarEdicion(index) {
-      this.indiceEditando = index;
-      this.conductorEditando = { ...this.conductores[index] };
-    },
-    // Guarda los cambios en el conductor editado
-    actualizarConductor() {
-      // Actualiza el conductor en el array asignando directamente el objeto editado
-      this.conductores[this.indiceEditando] = { ...this.conductorEditando };
-      // Reinicia los datos de edición
-      this.conductorEditando = null;
-      this.indiceEditando = -1;
+
+    // 🚀 Agregar un nuevo conductor
+    async agregarConductor() {
+  try {
+    const nuevoConductorData = { 
+      ...this.nuevoConductor,
+      correo_electronico: this.nuevoConductor.correo, // Renombrar para backend
+      licencia: this.nuevoConductor.numeroLicencia    // Renombrar para backend
+    };
+
+    const response = await fetch('http://localhost:3000/conductores', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(nuevoConductorData)
+    });
+
+    if (response.ok) {
+      this.fetchConductores(); // Recargar la lista de conductores
+      this.nuevoConductor = { documento: '', nombre: '', apellido: '', telefono: '', correo: '', numeroLicencia: '' };
+    } else {
+      console.error('Error al agregar conductor');
     }
-    ,
-    // Cancela la edición
-    cancelarEdicion() {
+  } catch (error) {
+    console.error('Error de red:', error);
+  }
+},
+
+    // 🚀 Iniciar edición
+    iniciarEdicion(index) {
+  this.indiceEditando = index;
+  this.conductorEditando = { 
+    ...this.conductores[index], 
+    correo: this.conductores[index].correo_electronico,  // Renombrar para Vue
+    numeroLicencia: this.conductores[index].licencia     // Renombrar para Vue
+  };
+},
+
+    // 🚀 Actualizar conductor
+    async actualizarConductor() {
+  try {
+    const conductorActualizado = { 
+      ...this.conductorEditando,
+      correo_electronico: this.conductorEditando.correo, // Renombrar para backend
+      licencia: this.conductorEditando.numeroLicencia    // Renombrar para backend
+    };
+
+    const response = await fetch(`http://localhost:3000/conductores/${this.conductorEditando.documento}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(conductorActualizado)
+    });
+
+    if (response.ok) {
+      this.fetchConductores(); // Recargar lista
       this.conductorEditando = null;
       this.indiceEditando = -1;
-    },
-    // Elimina el conductor seleccionado (con confirmación)
-    eliminarConductor(index) {
-      if (confirm('¿Seguro que deseas eliminar este conductor?')) {
-        this.conductores.splice(index, 1);
+    } else {
+      console.error('Error al actualizar conductor');
+    }
+  } catch (error) {
+    console.error('Error de red:', error);
+  }
+},
+
+    // 🚀 Eliminar conductor
+    async eliminarConductor(index) {
+      const documento = this.conductores[index].documento;
+      if (!confirm('¿Seguro que deseas eliminar este conductor?')) return;
+
+      try {
+        const response = await fetch(`http://localhost:3000/conductores/${documento}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          this.fetchConductores(); // Recargar la lista de conductores
+        } else {
+          console.error('Error al eliminar conductor');
+        }
+      } catch (error) {
+        console.error('Error de red:', error);
       }
     }
+  },
+  mounted() {
+    this.fetchConductores(); // Llamar a la API al cargar la vista
   }
 };
 </script>
+
 
 <style scoped>
 .conductores {

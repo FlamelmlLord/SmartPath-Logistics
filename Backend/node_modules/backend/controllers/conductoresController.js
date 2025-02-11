@@ -25,3 +25,39 @@ exports.createConductor = (req, res) => {
         }
     );
 };
+
+exports.updateConductor = (req, res) => {
+    const documento = req.params.documento;
+    const { nombre, apellido, telefono, correo_electronico, licencia } = req.body;
+    
+    client.query(
+        `UPDATE conductores 
+        SET nombre = $1, apellido = $2, telefono = $3, 
+            correo_electronico = $4, licencia = $5 
+        WHERE documento = $6`,
+        [nombre, apellido, telefono, correo_electronico, licencia, documento],
+        (err) => {
+            if (err) {
+                res.status(500).send(err.message);
+            } else {
+                res.sendStatus(200);
+            }
+        }
+    );
+};
+
+exports.deleteConductor = (req, res) => {
+    const documento = req.params.documento;
+    
+    client.query(
+        'DELETE FROM conductores WHERE documento = $1',
+        [documento],
+        (err) => {
+            if (err) {
+                res.status(500).send(err.message);
+            } else {
+                res.sendStatus(200);
+            }
+        }
+    );
+};
