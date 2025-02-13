@@ -1,5 +1,25 @@
 const client = require('./databaseConn');
 
+//_________________________________________________________________
+
+
+exports.getAllVehiculosForSelect = (req, res) => {
+    const query = 'SELECT placa, marca FROM vehiculos';
+    client.query(query, (err, result) => {
+        if (err) {
+        res.status(500).send(err.message);
+        } else {
+        const vehiculos = result.rows.map(row => ({
+          value: row.placa, // valor que se usará en la inserción
+          label: `${row.placa} ${row.marca}` // texto que se muestra en el select
+        }));
+        res.json(vehiculos);
+        }
+    });
+};
+
+//_________________________________________________________________
+
 exports.getAllVehiculos = (req, res) => {
     client.query('SELECT * FROM vehiculos', (err, result) => {
         if (err) {

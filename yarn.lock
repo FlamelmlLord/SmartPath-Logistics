@@ -7,6 +7,11 @@ dotenv@^16.4.7:
   resolved "https://registry.npmjs.org/dotenv/-/dotenv-16.4.7.tgz"
   integrity sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==
 
+moment@^2.30.1:
+  version "2.30.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
+  integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
+
 pg-cloudflare@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/pg-cloudflare/-/pg-cloudflare-1.1.1.tgz"
@@ -43,7 +48,7 @@ pg-types@^2.1.0:
     postgres-date "~1.0.4"
     postgres-interval "^1.1.0"
 
-pg@^8.13.1, pg@>=8.0:
+pg@^8.13.1:
   version "8.13.1"
   resolved "https://registry.npmjs.org/pg/-/pg-8.13.1.tgz"
   integrity sha512-OUir1A0rPNZlX//c7ksiu7crsGZTKSOXJPgtNiHGIlC9H0lO+NC6ZDYksSgBYY/thSWhnSRBv8w1lieNNGATNQ==
@@ -85,13 +90,12 @@ postgres-interval@^1.1.0:
   dependencies:
     xtend "^4.0.0"
 
-"smartpath-logistics@file:":
+"smartpath-logistics@file:.":
   version "1.0.0"
-  resolved "file:"
   dependencies:
     dotenv "^16.4.7"
     pg "^8.13.1"
-    smartpath-logistics "file:"
+    smartpath-logistics "file:../../../../../AppData/Local/Yarn/Cache/v6/npm-smartpath-logistics-1.0.0-a26a2efe-51aa-498f-b3c6-0ea4c296bd91-1739439181629/node_modules/smartpath-logistics"
 
 split2@^4.1.0:
   version "4.2.0"

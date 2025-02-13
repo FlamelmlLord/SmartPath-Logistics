@@ -6,5 +6,7 @@ router.get('/', controller.getAllConductores);
 router.post('/', controller.createConductor);
 router.put('/:documento', controller.updateConductor);
 router.delete('/:documento', controller.deleteConductor);
-
+//______________________________________________________
+router.get('/for-select', controller.getAllConductoresForSelect);
+//______________________________________________________
 module.exports = router;

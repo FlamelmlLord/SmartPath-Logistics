@@ -11,17 +11,16 @@ exports.getAllRutas = (req, res) => {
 };
 
 exports.createRuta = (req, res) => {
-    const { v_placa, c_documento } = req.body;
-    
+    const { v_placa, c_documento, fecha_despacho } = req.body;
     client.query(
-        'INSERT INTO rutas (v_placa, c_documento) VALUES ($1, $2) RETURNING id',
-        [v_placa, c_documento],
-        (err, result) => {
-            if (err) {
-                res.status(500).send(err.message);
-            } else {
-                res.status(201).json({ id: result.rows[0].id });
-            }
+    'INSERT INTO rutas (v_placa, c_documento, fecha_despacho) VALUES ($1, $2, $3) RETURNING id',
+    [v_placa, c_documento, fecha_despacho],
+    (err, result) => {
+        if (err) {
+        res.status(500).send(err.message);
+        } else {
+        res.status(201).json({ id: result.rows[0].id });
+        }
         }
     );
 };
@@ -37,6 +36,21 @@ exports.addPaqueteToRuta = (req, res) => {
                 res.status(500).send(err.message);
             } else {
                 res.sendStatus(201);
+            }
+        }
+    );
+};
+
+exports.deleteRuta = (req, res) => {
+    const id = req.params.id;
+    client.query(
+        'DELETE FROM rutas WHERE id = $1',
+        [id],
+        (err) => {
+            if (err) {
+                res.status(500).send(err.message);
+            } else {
+                res.sendStatus(200);
             }
         }
     );
